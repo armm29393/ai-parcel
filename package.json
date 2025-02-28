@@ -1,0 +1,36 @@
+{
+  "name": "ai-parcel",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@meghoshpritam/react-image-file-resizer": "^1.0.5",
+    "@mui/icons-material": "^6.0.0",
+    "@mui/lab": "^6.0.0-beta.8",
+    "@mui/material": "^6.0.1",
+    "axios": "^1.7.5",
+    "compressorjs": "^1.2.1",
+    "dayjs": "^1.11.13",
+    "mui-one-time-password-input": "^2.0.3",
+    "react": "latest",
+    "react-dom": "latest",
+    "react-number-format": "^5.4.1",
+    "react-read-otp": "^1.0.0",
+    "react-router-dom": "6",
+    "sweetalert2": "^11.17.2",
+    "sweetalert2-react-content": "^5.1.0",
+    "uuid": "^10.0.0",
+    "yn": "^5.0.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "latest",
+    "vite": "^5.4.2"
+  }
+}
