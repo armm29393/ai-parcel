@@ -48,7 +48,7 @@ function Home() {
         },
       });
     });
-    console.log('🚀 ~ resizedFile ~ resizedFile:', resizedFile)
+    // console.log('🚀 ~ resizedFile ~ resizedFile:', resizedFile)
     setFile(resizedFile); // Replace with actual resized file
   };
 
@@ -76,7 +76,7 @@ function Home() {
       });
 
       const result = await response.json();
-      console.log("🚀 ~ handleUpload ~ result:", result);
+      // console.log("🚀 ~ handleUpload ~ result:", result);
       populateInputs(result);
       setIsUploading(false);
       modal.close();
@@ -110,7 +110,7 @@ function Home() {
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files?.[0];
-    console.log('🚀 ~ handleFileChange ~ selectedFile:', selectedFile)
+    // console.log('🚀 ~ handleFileChange ~ selectedFile:', selectedFile)
     if (selectedFile) {
       // Check file size
       if (selectedFile.size > 1 * 1024 * 1024) {
