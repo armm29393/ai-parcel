@@ -3,6 +3,7 @@ import { Container } from "@mui/material";
 import MenuAppBar from "./components/AppBar";
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
+import GetINV from "./pages/GetINV";
 
 const App = () => {
   return (
@@ -13,6 +14,10 @@ const App = () => {
           <Route
             path="/"
             element={<Home />}
+          />
+          <Route
+            path="/inv"
+            element={<GetINV />}
           />
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import { Link } from "react-router-dom";
 import { styled } from "@mui/material";
 
-const MenuAppBar = ({ title }) => {
+const MenuAppBar = ({ title, noLogo = false }) => {
   const Offset = styled("div")(({ theme }) => theme.mixins.toolbar);
   return (
     <Box sx={{ flexGrow: 1 }}>
@@ -21,7 +21,7 @@ const MenuAppBar = ({ title }) => {
               WebkitTapHighlightColor: "transparent",
             }}
           >
-            <img
+            {!noLogo && <img
               src="/logo.png"
               alt="logo"
               style={{
@@ -29,7 +29,7 @@ const MenuAppBar = ({ title }) => {
                 height: 48,
                 margin: "-5px",
               }}
-            />
+            />}
             <Typography variant="h6" component="div" flexGrow={1}>
               {title}
             </Typography>
