@@ -1,7 +1,6 @@
 import { Button, Grid2, Stack, styled } from "@mui/material";
 import BackButton from "../../components/BackButton";
 import { useState } from "react";
-import "./style.css";
 import axios from "axios";
 
 const CodeBlock = styled("pre")(({ theme }) => ({
