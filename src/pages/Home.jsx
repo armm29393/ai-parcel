@@ -1,5 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
 import {
   Box,
   Grid2,
@@ -8,14 +7,15 @@ import {
   Checkbox,
   FormGroup,
   FormControlLabel,
+  Paper,
+  Typography,
 } from "@mui/material";
 import Swal from "sweetalert2";
 import withReactContent from "sweetalert2-react-content";
 import Compressor from "compressorjs";
+import { useDropzone } from "react-dropzone";
 
 function Home() {
-  const navigate = useNavigate();
-  const inputRef = useRef(null);
   const [file, setFile] = useState(null);
   const defaultInputs = useMemo(() => ({
     trackingNumber: { label: "เลขพัสดุ", value: "", visible: true },
@@ -48,90 +48,64 @@ function Home() {
         },
       });
     });
-    // console.log('🚀 ~ resizedFile ~ resizedFile:', resizedFile)
     setFile(resizedFile); // Replace with actual resized file
   };
 
-  const handleUpload = async () => {
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      setIsUploading(true);
-      modal.fire({
-        title: "Please Wait !",
-        html: "Processing your image with AI 🤖...", // add html attribute if you want or remove
-        allowOutsideClick: false,
-        showCancelButton: false, // There won't be any cancel button
-        showConfirmButton: false, // There won't be any confirm button
-      });
-      const response = await fetch(import.meta.env.VITE_API_URL, {
-        method: "POST",
-        headers: {
-          "x-api-key": import.meta.env.VITE_API_KEY,
-        },
-        body: formData,
-      });
-
-      const result = await response.json();
-      // console.log("🚀 ~ handleUpload ~ result:", result);
-      populateInputs(result);
-      setIsUploading(false);
-      modal.close();
-      // Swal.fire({
-      //   title: 'Please Wait !',
-      //   html: 'data uploading',// add html attribute if you want or remove
-      //   allowOutsideClick: false,
-      //   showCancelButton: false, // There won't be any cancel button
-      //   showConfirmButton: false, // There won't be any confirm button
-      //   onBeforeOpen: () => {
-      //     Swal.showLoading()
-      //   },
-      // });
-    } catch (error) {
-      console.error("Upload failed:", error);
-      modal.close();
-      modal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "Something went wrong!",
-      })
-      setIsUploading(false);
-    }
-  };
-
   const clear = () => {
-    inputRef.current.value = null;
     setFile(null);
     setInputs(defaultInputs);
   };
 
-  const handleFileChange = (event) => {
-    const selectedFile = event.target.files?.[0];
-    // console.log('🚀 ~ handleFileChange ~ selectedFile:', selectedFile)
+  const handleFileChange = async (files) => {
+    const selectedFile = files[0];
     if (selectedFile) {
       // Check file size
       if (selectedFile.size > 1 * 1024 * 1024) {
-        modal.fire({
+        resizeImage(selectedFile);
+        await modal.fire({
           title:'Please Wait',
           html:'Resizing your image...',
           timer: 2000,
           timerProgressBar: true,
+          allowOutsideClick: false,
+          showCancelButton: false, // There won't be any cancel button
+          showConfirmButton: false, // There won't be any confirm button
         })
-        resizeImage(selectedFile);
-        // modal.fire({
-        //   icon: "error",
-        //   title: "ขนาดไฟล์เกิน 1 MB",
-        //   text: "กรุณาเลือกไฟล์ใหม่",
-        // }).then(() => {
-        //   inputRef.current.value = null;
-        //   setFile(null);
-        //   clear();
-        // });
-      } else {
-        setFile(selectedFile);
+      }
+      // handleUpload()
+      const formData = new FormData();
+      formData.append("file", selectedFile);
+
+      try {
+        setIsUploading(true);
+        modal.fire({
+          title: "Please Wait !",
+          html: "Processing your image with AI 🤖...", // add html attribute if you want or remove
+          allowOutsideClick: false,
+          showCancelButton: false, // There won't be any cancel button
+          showConfirmButton: false, // There won't be any confirm button
+        });
+        const response = await fetch(import.meta.env.VITE_API_URL, {
+          method: "POST",
+          headers: {
+            "x-api-key": import.meta.env.VITE_API_KEY,
+          },
+          body: formData,
+        });
+
+        const result = await response.json();
+        populateInputs(result);
+        setIsUploading(false);
+        modal.close();
+      } catch (error) {
+        console.error("Upload failed:", error);
+        modal.close();
+        modal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: "Something went wrong!",
+        })
+        setIsUploading(false);
       }
     }
   };
@@ -172,30 +146,46 @@ function Home() {
     }));
   };
 
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: handleFileChange,
+    accept: { 'image/*': [] },
+    multiple: false,
+  })
+
   return (
     <Box sx={{ width: { xs: "100%", md: "80%" }, mx: "auto" }}>
       <Grid2 container direction="column" spacing={2}>
-        <Grid2 item>
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleFileChange}
-            ref={inputRef}
-          />
-        </Grid2>
-        <Grid2 item>
+        <Paper
+          {...getRootProps()}
+          elevation={3}
+          sx={{
+            border: '2px dashed #ccc',
+            borderRadius: '8px',
+            padding: '2rem',
+            textAlign: 'center',
+            cursor: 'pointer',
+            backgroundColor: isDragActive ? '#feecf3' : 'transparent',
+            boxShadow: isDragActive ? '0 0 10px rgba(0, 0, 0, 0.2)' : 'none',
+            my: 1.5,
+          }}
+        >
+          <input {...getInputProps()} />
+          <Typography variant="h4" gutterBottom>
+            📦
+          </Typography>
+          <Typography>ลากไฟล์รูปใบปะหน้าพัสดุมาวางที่นี่ หรือคลิกเพื่อเลือกไฟล์</Typography>
           <Button
             variant="contained"
-            onClick={handleUpload}
             disabled={isUploading}
+            sx={{ mt: 2 }}
           >
             {isUploading ? "Processing..." : "Upload"}
           </Button>
-        </Grid2>
+        </Paper>
         {Object.keys(inputs)
           .filter((key) => inputs[key].visible)
           .map((key) => (
-            <Grid2 item key={key}>
+            <Grid2 key={key}>
               <TextField
                 label={inputs[key].label}
                 value={inputs[key].value}
@@ -209,19 +199,15 @@ function Home() {
               />
             </Grid2>
           ))}
-        <Grid2 item>
-          {/* <BooleanField label={inputs.fragile.label} value={inputs.fragile.value} onChange={(e) => setInputs({
-            ...inputs,
-            fragile: { ...inputs.fragile, value:e.target.value }
-          })} /> */}
-          <FormGroup fullWidth>
+        <Grid2>
+          <FormGroup>
             <FormControlLabel
               control={<Checkbox checked={inputs.fragile.value} />}
               label={inputs.fragile.label}
             />
           </FormGroup>
         </Grid2>
-        <Grid2 item>
+        <Grid2>
           <Button variant="contained" onClick={clear}>
             Clear
           </Button>
